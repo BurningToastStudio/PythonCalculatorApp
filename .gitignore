@@ -1,0 +1,16 @@
+# JetBrains IDE files
+.idea/
+
+# Build artifacts
+cmake-build-*/
+*.exe
+*.out
+*.o
+*.obj
+*.dll
+*.so
+*.a
+
+# OS junk
+.DS_Store
+Thumbs.db
