@@ -8,16 +8,19 @@ import tkinter as tk
 #region Window Setup
 root = tk.Tk()
 root.title("Calculator App Thing")
-root.geometry("450x480")
+root.geometry("540x480")
 root.resizable(False, False)
 #endregion
 
 #region Constants
 DISPLAY_FONT = "Arial", 36
+
+HISTORY_FONT = "Arial", 10
+
 BUTTON_FONT = "Arial", 24
-BUTTON_WIDTH = 4
-BUTTON_HEIGHT = 2
-BUTTON_PADDING = 2
+WIDGET_WIDTH = 4
+WIDGET_HEIGHT = 2
+WIDGET_PADDING = 2
 #endregion
 
 #region Globals
@@ -100,12 +103,6 @@ def on_equals_clicked():
         # do the math and turn it into a string
         # this is the point that could fail, eval() is a built-in function
         result = str(eval(current_value))
-        # save result for operation chaining
-        last_result_value = result
-        # show the result
-        display.config(state="normal")
-        display_info.set(result)
-        display.config(state="readonly")
 
     # if there is an error with eval(), display error rather than breaking :)
     # also this works for divide-by-zero exceptions as well as general syntax errors
@@ -113,6 +110,28 @@ def on_equals_clicked():
         display.config(state="normal")
         display_info.set("Syntax Error")
         display.config(state="readonly")
+        # if error, return early
+        return
+
+    # save result for operation chaining
+    last_result_value = result
+
+    # make the full equation into a string
+    equation = f"{current_value} = {result}"
+    # allow modifying the text box
+    operation_history_text.config(state="normal")
+    # add the equation to the start (index 1.0)
+    # tk.END - end of text
+    # 1.0 is the first character on the first line
+    # \n means puts on a new line
+    operation_history_text.insert(1.0, f"{equation}\n")
+    # disable the textbox
+    operation_history_text.config(state="disabled")
+
+    # show the result
+    display.config(state="normal")
+    display_info.set(result)
+    display.config(state="readonly")
 
 #endregion
 
@@ -137,25 +156,38 @@ display = tk.Entry(
 # put at top and across 4 columns
 display.grid(row=0, column=0, columnspan=5)
 
-# makes it easy to change later
+operation_history_text = tk.Text(
+    font=HISTORY_FONT,
+    width=WIDGET_WIDTH,
+    height=WIDGET_HEIGHT,
+    state="disabled", # same as readonly but for text
+)
+
+operation_history_text.grid(
+    row=2, column=4, columnspan=2, rowspan=3,
+    padx=WIDGET_PADDING, pady=WIDGET_PADDING,
+    sticky="nsew")
+
+
 # tuple stores button string and grid position
 # button number, row, column
 buttons = [
-    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("*", 1, 3), ("CA", 1, 4),
-    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("-", 2, 3), ("CE", 2, 4),
+    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("*", 1, 3), ("CA", 1, 4), ("CE", 1, 5),
+    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("-", 2, 3),
     ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("+", 3, 3),
     ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("/", 4, 3)
 ]
+
 
 for (name, row, column) in buttons:
     button = tk.Button(
         text=name,
         font=BUTTON_FONT,
-        width=BUTTON_WIDTH,
-        height=BUTTON_HEIGHT,
+        width=WIDGET_WIDTH,
+        height=WIDGET_HEIGHT,
         command=lambda val=name: on_button_clicked(val)
     )
-    button.grid(row=row, column=column, sticky="nsew", padx=BUTTON_PADDING, pady=BUTTON_PADDING)
+    button.grid(row=row, column=column, sticky="nsew", padx=WIDGET_PADDING, pady=WIDGET_PADDING)
 
 #endregion
 
