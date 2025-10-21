@@ -12,13 +12,13 @@ import tkinter as tk
 #setup the window
 root = tk.Tk()
 root.title("Calculator App Thing")
-root.geometry("415x480")
+root.geometry("450x480")
 root.resizable(False, False)
 
 #calculator button layout
 #TOP DISPLAY HERE
-#7 8 9 x
-#4 5 6 -
+#7 8 9 x CA
+#4 5 6 - CE
 #1 2 3 +
 #0 . = /
 
@@ -28,9 +28,9 @@ displayFont = "Arial", 36
 displayInfo = tk.StringVar()
 #readonly stops you from typing in the display
 #justify right make the text stay on the right side
-display = tk.Entry(font=displayFont, width=15, borderwidth=5, state="readonly", justify="right", textvariable=displayInfo)
+display = tk.Entry(font=displayFont, width=16, borderwidth=5, state="readonly", justify="right", textvariable=displayInfo)
 #put at top and across 4 columns
-display.grid(row=0, column=0, columnspan=4)
+display.grid(row=0, column=0, columnspan=5)
 
 #endregion
 
@@ -58,6 +58,12 @@ def OnButtonClicked(buttonValue):
         OnEqualsClicked()
         return
 
+    #clear all
+    if buttonValue == "CA":
+        lastResultValue = None
+        ClearDisplay()
+        return
+
     #list of valid operation buttons
     operationButtons = [
         "/", "+", "-", "*"
@@ -74,6 +80,13 @@ def OnButtonClicked(buttonValue):
         currentValue = displayInfo.get()
         # append it to the display
         newValue = currentValue + str(buttonValue)
+
+    #clear entry
+    if buttonValue == "CE":
+        currentValue = displayInfo.get()
+        #string slicing [:x]
+        #this remove the last character -1 from the string
+        newValue = currentValue[:-1]
 
     #put the new value in the display
     display.config(state="normal")
@@ -117,8 +130,8 @@ buttonPadding = 2
 #tuple store button string and grid position
 #button number, row, collum
 buttons = [
-    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("*", 1, 3),
-    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("-", 2, 3),
+    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("*", 1, 3), ("CA", 1, 4),
+    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("-", 2, 3), ("CE", 2, 4),
     ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("+", 3, 3),
     ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("/", 4, 3)
 ]
